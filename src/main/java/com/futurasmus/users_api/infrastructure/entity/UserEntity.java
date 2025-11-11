@@ -41,10 +41,10 @@ public class UserEntity {
     @Column(unique = true)
     private String email;
 
-    @Size(min = 3, max = 100)
+    @Size(min = 2, max = 100)
     private String firstName;
 
-    @Size(min = 3, max = 100)
+    @Size(min = 2, max = 100)
     private String lastName;
 
     @NotBlank

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.futurasmus.users_api.application.dto.RequestUserDto;
 import com.futurasmus.users_api.application.dto.RequestUserFilterDto;
+import com.futurasmus.users_api.application.dto.RequestUserPatchDto;
 import com.futurasmus.users_api.application.dto.ResponseUserDto;
 import com.futurasmus.users_api.common.mapper.UserMapper;
 import com.futurasmus.users_api.domain.model.User;
@@ -25,9 +26,7 @@ public class UserService {
     public ResponseUserDto createUser(RequestUserDto userDto) {
         userRepository.findByEmail(userDto.email().toLowerCase())
             .ifPresent(u -> { throw new IllegalArgumentException("Email " + u.getEmail() + " already in use"); });
-
         User user = mapper.toDomain(userDto);
-        user.setEmail(user.getEmail().toLowerCase());
         User saved = userRepository.save(user);
         return mapper.toResponse(saved);
     }
@@ -47,14 +46,16 @@ public class UserService {
     public ResponseUserDto updateUser(Long userId, RequestUserDto userDto) {
         User existingUser = userRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("User not found"));
-        
-        existingUser.setEmail(userDto.email().toLowerCase());
-        existingUser.setFirstName(userDto.firstName());
-        existingUser.setLastName(userDto.lastName());
-        existingUser.setPassword(userDto.password());
-
+        mapper.updateUserFromDto(userDto, existingUser);
         User saved = userRepository.save(existingUser);
+        return mapper.toResponse(saved);
+    }
 
+    public ResponseUserDto updateUserPartial(Long userId, RequestUserPatchDto userDto) {
+        User existingUser = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+        mapper.patchUserFromDto(userDto, existingUser);
+        User saved = userRepository.save(existingUser);
         return mapper.toResponse(saved);
     }
 
