@@ -27,7 +27,7 @@ public class UserService {
             .ifPresent(u -> { throw new IllegalArgumentException("Email " + u.getEmail() + " already in use"); });
 
         User user = mapper.toDomain(userDto);
-        user.setEmail(user.getEmail().toLowerCase()); //TODO: comprobar si es buen sitio para hacerlo
+        user.setEmail(user.getEmail().toLowerCase());
         User saved = userRepository.save(user);
         return mapper.toResponse(saved);
     }
@@ -48,7 +48,7 @@ public class UserService {
         User existingUser = userRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("User not found"));
         
-        existingUser.setEmail(userDto.email());
+        existingUser.setEmail(userDto.email().toLowerCase());
         existingUser.setFirstName(userDto.firstName());
         existingUser.setLastName(userDto.lastName());
         existingUser.setPassword(userDto.password());
@@ -60,6 +60,8 @@ public class UserService {
 
     // DELETE
     public void deleteUser(Long userId) {
+        userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found"));
         userRepository.deleteById(userId);
     }
 }
