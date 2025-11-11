@@ -27,7 +27,7 @@ public class UserService {
     // CREATE
     public ResponseUserDto createUser(RequestUserDto userDto) {
         userRepository.findByEmail(userDto.email().toLowerCase())
-            .ifPresent(u -> { throw new EmailAlreadyExistsException(u.getEmail()); });
+            .ifPresent(u -> { throw new EmailAlreadyExistsException(u.getEmail().toLowerCase()); });
         User user = mapper.toDomain(userDto);
         User saved = userRepository.save(user);
         return mapper.toResponse(saved);
@@ -50,7 +50,7 @@ public class UserService {
             .orElseThrow(() -> new UserNotFoundException(userId));
                 
         userRepository.findByEmail(userDto.email().toLowerCase())
-            .ifPresent(u -> { throw new EmailAlreadyExistsException(u.getEmail()); });
+            .ifPresent(u -> { throw new EmailAlreadyExistsException(u.getEmail().toLowerCase()); });
 
         mapper.updateUserFromDto(userDto, existingUser);
         User saved = userRepository.save(existingUser);
@@ -63,7 +63,7 @@ public class UserService {
             
         if (userDto.email() != null) {
             userRepository.findByEmail(userDto.email().toLowerCase())
-                .ifPresent(u -> { throw new EmailAlreadyExistsException(u.getEmail()); });
+                .ifPresent(u -> { throw new EmailAlreadyExistsException(u.getEmail().toLowerCase()); });
         }
         mapper.patchUserFromDto(userDto, existingUser);
         User saved = userRepository.save(existingUser);
