@@ -25,7 +25,7 @@ public class UserService {
     // CREATE
     public ResponseUserDto createUser(RequestUserDto userDto) {
         userRepository.findByEmail(userDto.email().toLowerCase())
-            .ifPresent(u -> { throw new IllegalArgumentException("Email " + u.getEmail() + " already in use"); });
+            .ifPresent(u -> { throw new RuntimeException("Email " + u.getEmail() + " already in use"); });
         User user = mapper.toDomain(userDto);
         User saved = userRepository.save(user);
         return mapper.toResponse(saved);
@@ -46,6 +46,10 @@ public class UserService {
     public ResponseUserDto updateUser(Long userId, RequestUserDto userDto) {
         User existingUser = userRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("User not found"));
+                
+        userRepository.findByEmail(userDto.email().toLowerCase())
+            .ifPresent(u -> { throw new RuntimeException("Email " + u.getEmail() + " already in use"); });
+
         mapper.updateUserFromDto(userDto, existingUser);
         User saved = userRepository.save(existingUser);
         return mapper.toResponse(saved);
@@ -54,6 +58,10 @@ public class UserService {
     public ResponseUserDto updateUserPartial(Long userId, RequestUserPatchDto userDto) {
         User existingUser = userRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("User not found"));
+                
+        userRepository.findByEmail(userDto.email().toLowerCase())
+            .ifPresent(u -> { throw new RuntimeException("Email " + u.getEmail() + " already in use"); });
+        
         mapper.patchUserFromDto(userDto, existingUser);
         User saved = userRepository.save(existingUser);
         return mapper.toResponse(saved);
