@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.futurasmus.users_api.application.dto.RequestUserDto;
+import com.futurasmus.users_api.application.dto.RequestUserFilterDto;
 import com.futurasmus.users_api.application.dto.ResponseUserDto;
 import com.futurasmus.users_api.common.mapper.UserMapper;
 import com.futurasmus.users_api.domain.model.User;
@@ -22,17 +23,18 @@ public class UserService {
 
     // CREATE
     public ResponseUserDto createUser(RequestUserDto userDto) {
-        userRepository.findByEmail(userDto.email())
+        userRepository.findByEmail(userDto.email().toLowerCase())
             .ifPresent(u -> { throw new IllegalArgumentException("Email " + u.getEmail() + " already in use"); });
 
         User user = mapper.toDomain(userDto);
+        user.setEmail(user.getEmail().toLowerCase()); //TODO: comprobar si es buen sitio para hacerlo
         User saved = userRepository.save(user);
         return mapper.toResponse(saved);
     }
 
     // READ
-    public Page<ResponseUserDto> getAllUsers(Pageable pageable) {
-        return userRepository.findAll(pageable).map(mapper::toResponse);
+    public Page<ResponseUserDto> getAllUsers(RequestUserFilterDto filter, Pageable pageable) {
+        return userRepository.findAll(filter, pageable).map(mapper::toResponse);
     }
 
     public ResponseUserDto getUserById(Long userId) {

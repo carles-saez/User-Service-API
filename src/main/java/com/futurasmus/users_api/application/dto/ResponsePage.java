@@ -7,7 +7,7 @@ import org.springframework.data.domain.Page;
 import lombok.Getter;
 
 @Getter
-public class PageResponse<T> {
+public class ResponsePage<T> {
     private List<T> content;
     private int page;
     private int size;
@@ -15,7 +15,7 @@ public class PageResponse<T> {
     private int totalPages;
     private boolean last;
 
-    public PageResponse(Page<T> page) {
+    public ResponsePage(Page<T> page) {
         this.content = page.getContent();
         this.page = page.getNumber();
         this.size = page.getSize();

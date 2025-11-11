@@ -11,14 +11,13 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface UserMapper {
     User toDomain(UserEntity entity);
+    UserEntity toEntity(User domain);
+    ResponseUserDto toResponse(User domain);
     
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "active", ignore = true)
-    @Mapping(target = "validated", ignore = true)
-    User toDomain(RequestUserDto entity);
-
-    UserEntity toEntity(User domain);
-    ResponseUserDto toResponse(User domain);
+    @Mapping(target = "active", constant = "true")
+    @Mapping(target = "verified", constant = "false")
+    User toDomain(RequestUserDto dto);
 }

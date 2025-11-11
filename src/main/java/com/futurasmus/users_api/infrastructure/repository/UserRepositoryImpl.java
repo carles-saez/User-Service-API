@@ -1,9 +1,11 @@
 package com.futurasmus.users_api.infrastructure.repository;
 
+import com.futurasmus.users_api.application.dto.RequestUserFilterDto;
 import com.futurasmus.users_api.common.mapper.UserMapper;
 import com.futurasmus.users_api.domain.model.User;
 import com.futurasmus.users_api.domain.repository.UserRepository;
 import com.futurasmus.users_api.infrastructure.entity.UserEntity;
+import com.futurasmus.users_api.infrastructure.repository.spec.UserSpecification;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -42,8 +44,9 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<User> findAll(Pageable pageable) {
-        return jpaRepository.findAll(pageable).map(mapper::toDomain);
+    public Page<User> findAll(RequestUserFilterDto filter, Pageable pageable) {
+        var spec = UserSpecification.withFilters(filter);
+        return jpaRepository.findAll(spec, pageable).map(mapper::toDomain);
     }
 
     @Override

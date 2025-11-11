@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
@@ -59,9 +60,11 @@ public class UserEntity {
     @Column(nullable = false)
     LocalDateTime updatedAt;
 
-    @Builder.Default
-    Boolean active = true;
+    @NotNull
+    @Column(nullable = false)
+    Boolean active;
 
-    @Builder.Default
-    Boolean validated = false;
+    @NotNull
+    @Column(nullable = false)
+    Boolean verified;
 }

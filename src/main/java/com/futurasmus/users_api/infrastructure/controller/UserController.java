@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -13,7 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.futurasmus.users_api.application.dto.RequestUserDto;
-import com.futurasmus.users_api.application.dto.PageResponse;
+import com.futurasmus.users_api.application.dto.RequestUserFilterDto;
+import com.futurasmus.users_api.application.dto.ResponsePage;
 import com.futurasmus.users_api.application.dto.ResponseUserDto;
 import com.futurasmus.users_api.application.service.UserService;
 
@@ -37,9 +39,10 @@ public class UserController {
 
     // READ
     @GetMapping
-    public PageResponse<ResponseUserDto> getAllUsers(@PageableDefault(size = 10, sort = "id") Pageable pageable) {
-        Page<ResponseUserDto> page = userService.getAllUsers(pageable);
-        return new PageResponse<>(page);
+    public ResponsePage<ResponseUserDto> getAllUsers(@ModelAttribute RequestUserFilterDto filter,
+                                                     @PageableDefault(size = 10, sort = "id") Pageable pageable) {
+        Page<ResponseUserDto> page = userService.getAllUsers(filter, pageable);
+        return new ResponsePage<>(page);
     }
     
     @GetMapping("/{userId}")

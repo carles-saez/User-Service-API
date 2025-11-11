@@ -10,7 +10,7 @@ public record ResponseUserDto(
     LocalDateTime createdAt,
     LocalDateTime updatedAt,
     Boolean active,
-    Boolean validated
+    Boolean verified
 ) {
     
 }
