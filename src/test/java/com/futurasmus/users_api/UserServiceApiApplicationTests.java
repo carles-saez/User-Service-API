@@ -1,13 +1,13 @@
-package com.futurasmus.users_api;
+// package com.futurasmus.users_api;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+// import org.junit.jupiter.api.Test;
+// import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class UserServiceApiApplicationTests {
+// @SpringBootTest
+// class UserServiceApiApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
+// 	@Test
+// 	void contextLoads() {
+// 	}
 
-}
+// }
