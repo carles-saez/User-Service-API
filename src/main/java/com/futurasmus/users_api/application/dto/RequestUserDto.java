@@ -9,5 +9,14 @@ public record RequestUserDto(
     @Size(min = 3, max = 100) String firstName,
     @Size(min = 3, max = 100) String lastName,
     @NotBlank @Size(min = 8, max = 100) String password
-) {    
+) {
+    public RequestUserDto withEmail(String email){
+        return new RequestUserDto(email, this.firstName, this.lastName, this.password);
+    }
+    public RequestUserDto withPassword(String password){
+        return new RequestUserDto(this.email, this.firstName, this.lastName, password);
+    }
+    public RequestUserDto withEmailAndPassword(String email, String password){
+        return new RequestUserDto(email, this.firstName, this.lastName, password);
+    }
 }

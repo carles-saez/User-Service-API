@@ -32,11 +32,11 @@ public class UserService {
     // CREATE
     @Transactional
     public ResponseUserDto createUser(RequestUserDto userDto) {
-        userRepository.findByEmail(userDto.email().toLowerCase())
-            .ifPresent(u -> { throw new EmailAlreadyExistsException(u.getEmail().toLowerCase()); });
-        User user = mapper.toDomain(userDto);
-        user.setEmail(user.getEmail().toLowerCase());
-        // user.setPassword(passwordEncoder.encode(userDto.password()));
+        RequestUserDto normUserDto = userDto.withEmail(userDto.email().toLowerCase());
+        // RequestUserDto normUserDto = userDto.withEmailAndPassword(userDto.email().toLowerCase(), passwordEncoder.encode(userDto.password()));
+        userRepository.findByEmail(normUserDto.email())
+            .ifPresent(u -> { throw new EmailAlreadyExistsException(u.getEmail()); });
+        User user = mapper.toDomain(normUserDto);
         User saved = userRepository.save(user);
         return mapper.toResponse(saved);
     }
@@ -57,36 +57,38 @@ public class UserService {
     // UPDATE
     @Transactional
     public ResponseUserDto updateUser(Long userId, RequestUserDto userDto) {
+        RequestUserDto normUserDto = userDto.withEmail(userDto.email().toLowerCase());
+        // RequestUserDto normUserDto = userDto.withEmailAndPassword(userDto.email().toLowerCase(), passwordEncoder.encode(userDto.password()));
+
         User existingUser = userRepository.findById(userId)
             .orElseThrow(() -> new UserNotFoundException(userId));
                 
-        userRepository.findByEmail(userDto.email().toLowerCase())
-            .ifPresent(u -> { throw new EmailAlreadyExistsException(u.getEmail().toLowerCase()); });
+        userRepository.findByEmail(normUserDto.email())
+            .ifPresent(u -> { throw new EmailAlreadyExistsException(u.getEmail()); });
 
-        mapper.updateUserFromDto(userDto, existingUser);
-        existingUser.setEmail(userDto.email().toLowerCase());
-        // existingUser.setPassword(passwordEncoder.encode(userDto.password()));
+        mapper.updateUserFromDto(normUserDto, existingUser);
         User saved = userRepository.save(existingUser);
         return mapper.toResponse(saved);
     }
 
     @Transactional
     public ResponseUserDto updateUserPartial(Long userId, RequestUserPatchDto userDto) {
+
+        RequestUserPatchDto normUserDto = userDto;
+        if (userDto.email() != null) {
+            normUserDto = userDto.withEmail(userDto.email().toLowerCase());
+        }
+        // if (userDto.password() != null) {
+        //     normUserDto = userDto.withPassword(passwordEncoder.encode(userDto.password()));
+        // }
         User existingUser = userRepository.findById(userId)
             .orElseThrow(() -> new UserNotFoundException(userId));
             
-        if (userDto.email() != null) {
-            userRepository.findByEmail(userDto.email().toLowerCase())
-                .ifPresent(u -> { throw new EmailAlreadyExistsException(u.getEmail().toLowerCase()); });
+        if (normUserDto.email() != null) {
+            userRepository.findByEmail(normUserDto.email())
+                .ifPresent(u -> { throw new EmailAlreadyExistsException(u.getEmail()); });
         }
-        mapper.patchUserFromDto(userDto, existingUser);
-
-        if (userDto.email() != null) {
-            existingUser.setEmail(userDto.email().toLowerCase());
-        }
-        // if (userDto.password() != null) {
-        //     existingUser.setPassword(passwordEncoder.encode(userDto.password()));
-        // }
+        mapper.patchUserFromDto(normUserDto, existingUser);
         User saved = userRepository.save(existingUser);
         return mapper.toResponse(saved);
     }

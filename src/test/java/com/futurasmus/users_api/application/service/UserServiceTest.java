@@ -49,7 +49,7 @@ public class UserServiceTest {
     @Test
     void createUser_withCorrectUserDto_shouldReturn_ResponseUserDto() {
         // Arrange
-        RequestUserDto userDto = new RequestUserDto("Test", "User", "test@example.com", "password");
+        RequestUserDto userDto = new RequestUserDto("test@example.com", "Test", "User", "password");
         User user = new User(1L, "test@example.com", "Test", "User", "password", null, null, true, false);
         ResponseUserDto responseUserDto = new ResponseUserDto(1L, "test@example.com", "Test", "User", null, null, true, false);
         

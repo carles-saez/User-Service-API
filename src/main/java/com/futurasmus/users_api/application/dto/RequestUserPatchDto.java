@@ -9,4 +9,13 @@ public record RequestUserPatchDto(
     @Size(min = 2, max = 100) String lastName,
     @Size(min = 8, max = 100) String password
 ) {
+    public RequestUserPatchDto withEmail(String email){
+        return new RequestUserPatchDto(email, this.firstName, this.lastName, this.password);
+    }
+    public RequestUserPatchDto withPassword(String password){
+        return new RequestUserPatchDto(this.email, this.firstName, this.lastName, password);
+    }
+    public RequestUserPatchDto withEmailAndPassword(String email, String password){
+        return new RequestUserPatchDto(email, this.firstName, this.lastName, password);
+    }
 }
