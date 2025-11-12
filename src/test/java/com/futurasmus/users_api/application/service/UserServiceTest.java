@@ -21,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.futurasmus.users_api.application.dto.RequestUserDto;
 import com.futurasmus.users_api.application.dto.RequestUserFilterDto;
@@ -43,6 +44,9 @@ public class UserServiceTest {
 
     @Mock
     private UserMapper mapper;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
     
 
     // --- CREATE ---
@@ -57,6 +61,7 @@ public class UserServiceTest {
         when(mapper.toDomain(userDto)).thenReturn(user);
         when(userRepository.save(any(User.class))).thenReturn(user);
         when(mapper.toResponse(user)).thenReturn(responseUserDto);
+        when(passwordEncoder.encode(userDto.password())).thenReturn(userDto.password());
         
         // Action
         ResponseUserDto result = userService.createUser(userDto);
@@ -65,6 +70,7 @@ public class UserServiceTest {
         assertEquals(responseUserDto, result);
         
         verify(userRepository).findByEmail(userDto.email().toLowerCase());
+        verify(passwordEncoder).encode(userDto.password());
         verify(mapper).toDomain(userDto);
         verify(userRepository).save(any(User.class));
         verify(mapper).toResponse(user);
@@ -78,10 +84,12 @@ public class UserServiceTest {
         User user = new User(1L, "test@example.com", "Test", "User", "password", null, null, true, false);
         
         when(userRepository.findByEmail(userDto.email().toLowerCase())).thenReturn(Optional.of(user));
+        when(passwordEncoder.encode(userDto.password())).thenReturn(userDto.password());
 
         // Action & Assert
         assertThrows(EmailAlreadyExistsException.class, () -> userService.createUser(userDto));
 
+        verify(passwordEncoder).encode(userDto.password());
         verify(userRepository).findByEmail(userDto.email().toLowerCase());
         verify(userRepository, times(0)).save(any(User.class));
     }
@@ -174,17 +182,17 @@ public class UserServiceTest {
             target.setPassword(argDto.password());
             return null;
         }).when(mapper).updateUserFromDto(eq(userDto), any(User.class));
-
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(mapper.toResponse(any(User.class))).thenReturn(responseUserDto);
+        when(passwordEncoder.encode(userDto.password())).thenReturn(userDto.password());
 
         // Action
         ResponseUserDto result = userService.updateUser(userId, userDto);
 
         // Assert
         assertEquals(responseUserDto, result);
-        assertEquals("updated@example.com", existingUser.getEmail());
 
+        verify(passwordEncoder).encode(userDto.password());
         verify(userRepository).findById(userId);
         verify(mapper).updateUserFromDto(userDto, existingUser);
         verify(userRepository).save(existingUser);
@@ -196,13 +204,15 @@ public class UserServiceTest {
     void updateUser_withInvalidId_shouldThrow_UserNotFoundException() {
         // Arrange
         Long userId = 999L;
-        RequestUserDto userDto = new RequestUserDto("Updated", "User", "updated@example.com", "newpassword");
+        RequestUserDto userDto = new RequestUserDto("updated@example.com", "Updated", "User", "newpassword");
         
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
+        when(passwordEncoder.encode(userDto.password())).thenReturn(userDto.password());
         
         // Action & Assert
         assertThrows(UserNotFoundException.class, () -> userService.updateUser(userId, userDto));
         
+        verify(passwordEncoder).encode(userDto.password());
         verify(userRepository).findById(userId);
         verify(userRepository, times(0)).findByEmail(any(String.class));
         verify(mapper, times(0)).updateUserFromDto(any(RequestUserDto.class), any(User.class));
@@ -213,16 +223,18 @@ public class UserServiceTest {
     void updateUser_withExistingEmail_shouldThrow_EmailAlreadyExistsException() {
         // Arrange
         Long userId = 1L;
-        RequestUserDto userDto = new RequestUserDto("Updated", "User", "existing@example.com", "newpassword");
+        RequestUserDto userDto = new RequestUserDto("existing@example.com", "Updated", "User", "newpassword");
         User existingUser = new User(userId, "old@example.com", "Old", "User", "oldpassword", null, null, true, false);
         User anotherUser = new User(2L, "existing@example.com", "Another", "User", "password", null, null, true, false);
         
         when(userRepository.findById(userId)).thenReturn(Optional.of(existingUser));
         when(userRepository.findByEmail(userDto.email().toLowerCase())).thenReturn(Optional.of(anotherUser));
+        when(passwordEncoder.encode(userDto.password())).thenReturn(userDto.password());
         
         // Action & Assert
         assertThrows(EmailAlreadyExistsException.class, () -> userService.updateUser(userId, userDto));
         
+        verify(passwordEncoder).encode(userDto.password());
         verify(userRepository).findById(userId);
         verify(userRepository).findByEmail(userDto.email().toLowerCase());
         verify(mapper, times(0)).updateUserFromDto(any(RequestUserDto.class), any(User.class));
@@ -253,6 +265,7 @@ public class UserServiceTest {
 
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(mapper.toResponse(any(User.class))).thenReturn(responseUserDto);
+        when(passwordEncoder.encode(userDto.password())).thenReturn(userDto.password());
 
         // Action
         ResponseUserDto result = userService.updateUserPartial(userId, userDto);
@@ -261,6 +274,7 @@ public class UserServiceTest {
         assertEquals(responseUserDto, result);
         assertEquals("updated@example.com", existingUser.getEmail());
 
+        verify(passwordEncoder).encode(userDto.password());
         verify(userRepository).findById(userId);
         verify(mapper).patchUserFromDto(userDto, existingUser);
         verify(userRepository).save(existingUser);
@@ -272,13 +286,15 @@ public class UserServiceTest {
     void updateUserPartial_withInvalidId_shouldThrow_UserNotFoundException() {
         // Arrange
         Long userId = 999L;
-        RequestUserPatchDto userDto = new RequestUserPatchDto("Updated", "User", "updated@example.com", "newpassword");
+        RequestUserPatchDto userDto = new RequestUserPatchDto("updated@example.com", "Updated", "User", "newpassword");
         
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
+        when(passwordEncoder.encode(userDto.password())).thenReturn(userDto.password());
         
         // Action & Assert
         assertThrows(UserNotFoundException.class, () -> userService.updateUserPartial(userId, userDto));
         
+        verify(passwordEncoder).encode(userDto.password());
         verify(userRepository).findById(userId);
         verify(userRepository, times(0)).findByEmail(any(String.class));
         verify(mapper, times(0)).patchUserFromDto(any(RequestUserPatchDto.class), any(User.class));
@@ -289,16 +305,18 @@ public class UserServiceTest {
     void updateUserPartial_withExistingEmail_shouldThrow_EmailAlreadyExistsException() {
         // Arrange
         Long userId = 1L;
-        RequestUserPatchDto userDto = new RequestUserPatchDto("Updated", "User", "existing@example.com", "newpassword");
+        RequestUserPatchDto userDto = new RequestUserPatchDto("existing@example.com", "Updated", "User", "newpassword");
         User existingUser = new User(userId, "old@example.com", "Old", "User", "oldpassword", null, null, true, false);
         User anotherUser = new User(2L, "existing@example.com", "Another", "User", "password", null, null, true, false);
         
         when(userRepository.findById(userId)).thenReturn(Optional.of(existingUser));
         when(userRepository.findByEmail(userDto.email().toLowerCase())).thenReturn(Optional.of(anotherUser));
+        when(passwordEncoder.encode(userDto.password())).thenReturn(userDto.password());
         
         // Action & Assert
         assertThrows(EmailAlreadyExistsException.class, () -> userService.updateUserPartial(userId, userDto));
         
+        verify(passwordEncoder).encode(userDto.password());
         verify(userRepository).findById(userId);
         verify(userRepository).findByEmail(userDto.email().toLowerCase());
         verify(mapper, times(0)).patchUserFromDto(any(RequestUserPatchDto.class), any(User.class));

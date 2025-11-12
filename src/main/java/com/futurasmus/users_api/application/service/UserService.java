@@ -27,13 +27,13 @@ public class UserService {
     private UserMapper mapper;
 
     @Autowired
-    PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
 
     // CREATE
     @Transactional
     public ResponseUserDto createUser(RequestUserDto userDto) {
-        RequestUserDto normUserDto = userDto.withEmail(userDto.email().toLowerCase());
-        // RequestUserDto normUserDto = userDto.withEmailAndPassword(userDto.email().toLowerCase(), passwordEncoder.encode(userDto.password()));
+        // RequestUserDto normUserDto = userDto.withEmail(userDto.email().toLowerCase());
+        RequestUserDto normUserDto = userDto.withEmailAndPassword(userDto.email().toLowerCase(), passwordEncoder.encode(userDto.password()));
         userRepository.findByEmail(normUserDto.email())
             .ifPresent(u -> { throw new EmailAlreadyExistsException(u.getEmail()); });
         User user = mapper.toDomain(normUserDto);
@@ -57,8 +57,8 @@ public class UserService {
     // UPDATE
     @Transactional
     public ResponseUserDto updateUser(Long userId, RequestUserDto userDto) {
-        RequestUserDto normUserDto = userDto.withEmail(userDto.email().toLowerCase());
-        // RequestUserDto normUserDto = userDto.withEmailAndPassword(userDto.email().toLowerCase(), passwordEncoder.encode(userDto.password()));
+        // RequestUserDto normUserDto = userDto.withEmail(userDto.email().toLowerCase());
+        RequestUserDto normUserDto = userDto.withEmailAndPassword(userDto.email().toLowerCase(), passwordEncoder.encode(userDto.password()));
 
         User existingUser = userRepository.findById(userId)
             .orElseThrow(() -> new UserNotFoundException(userId));
@@ -78,9 +78,10 @@ public class UserService {
         if (userDto.email() != null) {
             normUserDto = userDto.withEmail(userDto.email().toLowerCase());
         }
-        // if (userDto.password() != null) {
-        //     normUserDto = userDto.withPassword(passwordEncoder.encode(userDto.password()));
-        // }
+        if (userDto.password() != null) {
+            normUserDto = userDto.withPassword(passwordEncoder.encode(userDto.password()));
+        }
+
         User existingUser = userRepository.findById(userId)
             .orElseThrow(() -> new UserNotFoundException(userId));
             
