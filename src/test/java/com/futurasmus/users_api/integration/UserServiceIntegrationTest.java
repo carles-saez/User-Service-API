@@ -90,7 +90,7 @@ class UserServiceIntegrationTest {
                 new UserEntity(null, "test1@example.com", "Test1", "User1", "password1", null, null, true, false),
                 new UserEntity(null, "test2@example.com", "Test2", "User2", "password2", null, null, true, false)
         ));
-        RequestUserFilterDto filters = new RequestUserFilterDto(null, null, null, null, null, null, null, null);
+        RequestUserFilterDto filters = new RequestUserFilterDto(null, null, null, null, null, null, null, null, null, null, null, null);
 
         // Action
         Page<ResponseUserDto> users = userService.getAllUsers(filters, Pageable.unpaged());

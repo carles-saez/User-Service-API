@@ -2,6 +2,9 @@ package com.futurasmus.users_api.infrastructure.repository.spec;
 
 import com.futurasmus.users_api.infrastructure.entity.UserEntity;
 import com.futurasmus.users_api.application.dto.RequestUserFilterDto;
+
+import java.time.LocalDateTime;
+
 import org.springframework.data.jpa.domain.Specification;
 
 public class UserSpecification {
@@ -14,6 +17,10 @@ public class UserSpecification {
             firstNameNotContains(filters.notFirstName()),
             lastNameContains(filters.lastName()),
             lastNameNotContains(filters.notLastName()),
+            createdAtBefore(filters.createdBefore()),
+            createdAtAfter(filters.createdAfter()),
+            updatedAtBefore(filters.updatedBefore()),
+            updatedAtAfter(filters.updatedAfter()),
             isActive(filters.active()),
             isVerified(filters.verified())
         );
@@ -47,6 +54,26 @@ public class UserSpecification {
     private static Specification<UserEntity> lastNameNotContains(String lastName) {
         return (root, query, cb) ->
                 lastName == null ? null : cb.notLike(cb.lower(root.get("lastName")), "%" + lastName.toLowerCase() + "%");
+    }
+
+    private static Specification<UserEntity> createdAtBefore(LocalDateTime createdAt) {
+        return (root, query, cb) ->
+                createdAt == null ? null : cb.lessThan(root.get("createdAt"), createdAt);
+    }
+
+    private static Specification<UserEntity> createdAtAfter(LocalDateTime createdAt) {
+        return (root, query, cb) ->
+                createdAt == null ? null : cb.greaterThan(root.get("createdAt"), createdAt);
+    }
+
+    private static Specification<UserEntity> updatedAtBefore(LocalDateTime updatedAt) {
+        return (root, query, cb) ->
+                updatedAt == null ? null : cb.lessThan(root.get("updatedAt"), updatedAt);
+    }
+
+    private static Specification<UserEntity> updatedAtAfter(LocalDateTime updatedAt) {
+        return (root, query, cb) ->
+                updatedAt == null ? null : cb.greaterThan(root.get("updatedAt"), updatedAt);
     }
 
     private static Specification<UserEntity> isActive(Boolean active) {

@@ -727,6 +727,22 @@
           "notLastName": {
             "type": "string"
           },
+          "createdBefore": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "createdAfter": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedBefore": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAfter": {
+            "type": "string",
+            "format": "date-time"
+          },
           "active": {
             "type": "boolean"
           },

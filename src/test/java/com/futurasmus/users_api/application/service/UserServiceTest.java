@@ -101,7 +101,7 @@ public class UserServiceTest {
     @Test
     void getAllUsers_shouldReturn_PageOfResponseUserDto() {
         // Arrange
-        RequestUserFilterDto filter = new RequestUserFilterDto("test", null, null, null, null, null, null, null);
+        RequestUserFilterDto filter = new RequestUserFilterDto("test", null, null, null, null, null, null, null, null, null, null, null);
         Pageable pageable = PageRequest.of(0, 2);
 
         User user1 = new User(1L, "test1@example.com", "Test1", "User1", null, null, null, true, false);

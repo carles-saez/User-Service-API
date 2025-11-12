@@ -96,6 +96,30 @@ class UserControllerIntegrationTest {
             .andExpect(jsonPath("$.content", hasSize(2)))
             .andExpect(jsonPath("$.content[0].email", containsString("@example.com")));
     }
+    
+    @Test
+    void shouldReturnEmptyListOfFilteredUsers() throws Exception {
+        // Arrange
+        userJpaRepository.save(new UserEntity(null, "a@example.com", "Test1", "User1", "password", null, null, true, false));
+        userJpaRepository.save(new UserEntity(null, "b@example.com", "Test2", "User2", "password", null, null, true, false));
+
+        // Action / Assert
+        mockMvc.perform(get("/api/users?createdBefore=2025-11-10T18:10:00"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.content", hasSize(0)));
+    }
+    
+    @Test
+    void shouldReturnPageOfOneUser() throws Exception {
+        // Arrange
+        userJpaRepository.save(new UserEntity(null, "a@example.com", "Test1", "User1", "password", null, null, true, false));
+        userJpaRepository.save(new UserEntity(null, "b@example.com", "Test2", "User2", "password", null, null, true, false));
+
+        // Action / Assert
+        mockMvc.perform(get("/api/users?page=0&size=1"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.content", hasSize(1)));
+    }
 
     @Test
     void shouldReturnUserById() throws Exception {
