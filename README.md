@@ -30,8 +30,8 @@ El proyecto sigue un enfoque hexagonal/por capas, separando responsabilidades en
 
 ## Requisitos previos
 - Java 21 (JDK)
-- Maven >= 3.9
-- PostgreSQL 14+ (opcional si se usa una instancia externa)
+- Maven >= 3.8.7
+- PostgreSQL 16+ (opcional si se usa una instancia externa)
 - Acceso a variables de entorno para credenciales de base de datos
 
 ## Configuración
