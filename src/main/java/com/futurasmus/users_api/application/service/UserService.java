@@ -3,6 +3,7 @@ package com.futurasmus.users_api.application.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,12 +26,17 @@ public class UserService {
     @Autowired
     private UserMapper mapper;
 
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
     // CREATE
     @Transactional
     public ResponseUserDto createUser(RequestUserDto userDto) {
         userRepository.findByEmail(userDto.email().toLowerCase())
             .ifPresent(u -> { throw new EmailAlreadyExistsException(u.getEmail().toLowerCase()); });
         User user = mapper.toDomain(userDto);
+        user.setEmail(user.getEmail().toLowerCase());
+        // user.setPassword(passwordEncoder.encode(userDto.password()));
         User saved = userRepository.save(user);
         return mapper.toResponse(saved);
     }
@@ -58,6 +64,8 @@ public class UserService {
             .ifPresent(u -> { throw new EmailAlreadyExistsException(u.getEmail().toLowerCase()); });
 
         mapper.updateUserFromDto(userDto, existingUser);
+        existingUser.setEmail(userDto.email().toLowerCase());
+        // existingUser.setPassword(passwordEncoder.encode(userDto.password()));
         User saved = userRepository.save(existingUser);
         return mapper.toResponse(saved);
     }
@@ -72,6 +80,13 @@ public class UserService {
                 .ifPresent(u -> { throw new EmailAlreadyExistsException(u.getEmail().toLowerCase()); });
         }
         mapper.patchUserFromDto(userDto, existingUser);
+
+        if (userDto.email() != null) {
+            existingUser.setEmail(userDto.email().toLowerCase());
+        }
+        // if (userDto.password() != null) {
+        //     existingUser.setPassword(passwordEncoder.encode(userDto.password()));
+        // }
         User saved = userRepository.save(existingUser);
         return mapper.toResponse(saved);
     }

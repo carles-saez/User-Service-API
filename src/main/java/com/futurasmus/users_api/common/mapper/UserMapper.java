@@ -23,7 +23,6 @@ public interface UserMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "active", constant = "true")
     @Mapping(target = "verified", constant = "false")
-    @Mapping(target = "email", expression = "java(dto.email().toLowerCase())")
     User toDomain(RequestUserDto dto);
 
     @Mapping(target = "id", ignore = true)
@@ -31,7 +30,6 @@ public interface UserMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "active", ignore = true)
     @Mapping(target = "verified", ignore = true)
-    @Mapping(target = "email", expression = "java(dto.email().toLowerCase())")
     void updateUserFromDto(RequestUserDto dto, @MappingTarget User domain);
 
     @Mapping(target = "id", ignore = true)
@@ -39,7 +37,6 @@ public interface UserMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "active", ignore = true)
     @Mapping(target = "verified", ignore = true)
-    @Mapping(target = "email", expression = "java(dto.email() != null ? dto.email().toLowerCase() : domain.getEmail())")
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void patchUserFromDto(RequestUserPatchDto dto, @MappingTarget User domain);
 
