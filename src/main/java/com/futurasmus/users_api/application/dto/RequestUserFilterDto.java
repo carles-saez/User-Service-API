@@ -4,6 +4,9 @@ public record RequestUserFilterDto(
     String email,
     String firstName,
     String lastName,
+    String notEmail,
+    String notFirstName,
+    String notLastName,
     Boolean active,
     Boolean verified) {
 }
