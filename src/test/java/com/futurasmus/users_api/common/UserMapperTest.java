@@ -34,8 +34,7 @@ public class UserMapperTest {
     
     @Test
     void toDomain_withValidUserEntity_shouldReturnUser() {
-        // Arrange
-        // Action
+        // Arrange / Action
         User result = mapper.toDomain(userEntity);
         // Assert
         assertEquals(user, result);
@@ -43,8 +42,7 @@ public class UserMapperTest {
 
     @Test
     void toEntity_withValidUser_shouldReturnUserEntity() {
-        // Arrange
-        // Action
+        // Arrange / Action
         UserEntity result = mapper.toEntity(user);
         //Assert
         assertEquals(userEntity, result);
@@ -52,8 +50,7 @@ public class UserMapperTest {
 
     @Test
     void toResponse_withValidUser_shouldReturnResponseUserDto() {
-        // Arrange
-        // Action
+        // Arrange / Action
         ResponseUserDto result = mapper.toResponse(user);
         // Assert
         assertEquals(responseUserDto, result);

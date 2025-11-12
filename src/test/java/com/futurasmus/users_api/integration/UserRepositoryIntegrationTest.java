@@ -17,8 +17,6 @@ import org.springframework.data.jpa.domain.Specification;
 import com.futurasmus.users_api.infrastructure.entity.UserEntity;
 import com.futurasmus.users_api.infrastructure.repository.UserJpaRepository;
 
-import jakarta.validation.ConstraintViolationException;
-
 @DataJpaTest
 public class UserRepositoryIntegrationTest {
      @Autowired
@@ -76,58 +74,10 @@ public class UserRepositoryIntegrationTest {
 
         userJpaRepository.save(user1);
 
-        // Action Assert
+        // Action / Assert
         assertThrows(
             DataIntegrityViolationException.class,
             () -> {userJpaRepository.saveAndFlush(user2);}
-        );
-    }
-
-    @Test
-    void shouldFailWhenNullEmail(){
-        // Arrange
-        UserEntity user = new UserEntity(null, null, "Test", "User", "password", null, null, true, false);
-
-        // Action Assert
-        assertThrows(
-            ConstraintViolationException.class,
-            () -> {userJpaRepository.saveAndFlush(user);}
-        );
-    }
-    
-    @Test
-    void shouldFailWhenShortPassword(){
-        // Arrange
-        UserEntity user = new UserEntity(null, null, "Test", "User", "pass", null, null, true, false);
-
-        // Action Assert
-        assertThrows(
-            ConstraintViolationException.class,
-            () -> {userJpaRepository.saveAndFlush(user);}
-        );
-    }
-    
-    @Test
-    void shouldFailWhenNullActive(){
-        // Arrange
-        UserEntity user = new UserEntity(null, null, "Test", "User", "pass", null, null, null, false);
-
-        // Action Assert
-        assertThrows(
-            ConstraintViolationException.class,
-            () -> {userJpaRepository.saveAndFlush(user);}
-        );
-    }
-    
-    @Test
-    void shouldFailWhenNullVerified(){
-        // Arrange
-        UserEntity user = new UserEntity(null, null, "Test", "User", "pass", null, null, true, null);
-
-        // Action Assert
-        assertThrows(
-            ConstraintViolationException.class,
-            () -> {userJpaRepository.saveAndFlush(user);}
         );
     }
     

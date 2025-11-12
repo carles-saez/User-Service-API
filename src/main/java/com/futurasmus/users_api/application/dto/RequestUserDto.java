@@ -6,8 +6,8 @@ import jakarta.validation.constraints.Size;
 
 public record RequestUserDto(
     @Email @NotBlank @Size(min = 5, max = 100) String email,
-    @Size(min = 3, max = 100) String firstName,
-    @Size(min = 3, max = 100) String lastName,
+    @Size(min = 2, max = 100) String firstName,
+    @Size(min = 2, max = 100) String lastName,
     @NotBlank @Size(min = 8, max = 100) String password
 ) {
     public RequestUserDto withEmail(String email){

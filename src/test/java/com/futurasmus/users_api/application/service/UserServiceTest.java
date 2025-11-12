@@ -86,7 +86,7 @@ public class UserServiceTest {
         when(userRepository.findByEmail(userDto.email().toLowerCase())).thenReturn(Optional.of(user));
         when(passwordEncoder.encode(userDto.password())).thenReturn(userDto.password());
 
-        // Action & Assert
+        // Action / Assert
         assertThrows(
             EmailAlreadyExistsException.class,
             () -> userService.createUser(userDto)
@@ -158,7 +158,7 @@ public class UserServiceTest {
 
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
         
-        // Action & Assert
+        // Action / Assert
         assertThrows(
             UserNotFoundException.class,
             () -> userService.getUserById(userId)
@@ -215,7 +215,7 @@ public class UserServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
         when(passwordEncoder.encode(userDto.password())).thenReturn(userDto.password());
         
-        // Action & Assert
+        // Action / Assert
         assertThrows(
             UserNotFoundException.class,
             () -> userService.updateUser(userId, userDto)
@@ -241,7 +241,7 @@ public class UserServiceTest {
         when(userRepository.findByEmail(userDto.email().toLowerCase())).thenReturn(Optional.of(anotherUser));
         when(passwordEncoder.encode(userDto.password())).thenReturn(userDto.password());
         
-        // Action & Assert
+        // Action / Assert
         assertThrows(
             EmailAlreadyExistsException.class,
             () -> userService.updateUser(userId, userDto)
@@ -305,7 +305,7 @@ public class UserServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
         when(passwordEncoder.encode(userDto.password())).thenReturn(userDto.password());
         
-        // Action & Assert
+        // Action / Assert
         assertThrows(
             UserNotFoundException.class,
             () -> userService.updateUserPartial(userId, userDto)
@@ -331,7 +331,7 @@ public class UserServiceTest {
         when(userRepository.findByEmail(userDto.email().toLowerCase())).thenReturn(Optional.of(anotherUser));
         when(passwordEncoder.encode(userDto.password())).thenReturn(userDto.password());
         
-        // Action & Assert
+        // Action / Assert
         assertThrows(
             EmailAlreadyExistsException.class,
             () -> userService.updateUserPartial(userId, userDto)
@@ -369,7 +369,7 @@ public class UserServiceTest {
         
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
         
-        // Action & Assert
+        // Action / Assert
         assertThrows(
             UserNotFoundException.class,
             () -> userService.deleteUser(userId)

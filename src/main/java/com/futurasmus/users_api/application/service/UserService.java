@@ -60,8 +60,11 @@ public class UserService {
         User existingUser = userRepository.findById(userId)
             .orElseThrow(() -> new UserNotFoundException(userId));
         userRepository.findByEmail(normUserDto.email())
-            .ifPresent(u -> { throw new EmailAlreadyExistsException(u.getEmail()); });
-        
+            .ifPresent(u -> {
+                if(u.getId() != userId) {
+                    throw new EmailAlreadyExistsException(u.getEmail());
+                }
+            });
         mapper.updateUserFromDto(normUserDto, existingUser);
         User saved = userRepository.save(existingUser);
         return mapper.toResponse(saved);
@@ -81,7 +84,11 @@ public class UserService {
             .orElseThrow(() -> new UserNotFoundException(userId));
         if (normUserDto.email() != null) {
             userRepository.findByEmail(normUserDto.email())
-                .ifPresent(u -> { throw new EmailAlreadyExistsException(u.getEmail()); });
+                .ifPresent(u -> {
+                    if(u.getId() != userId) {
+                        throw new EmailAlreadyExistsException(u.getEmail());
+                    }
+                });
         }
         mapper.patchUserFromDto(normUserDto, existingUser);
         User saved = userRepository.save(existingUser);

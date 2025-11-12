@@ -28,15 +28,18 @@
           "required": true
         },
         "responses": {
-          "200": {
-            "description": "OK",
+          "201": {
+            "description": "User created",
             "content": {
-              "application/json": {
+              "*/*": {
                 "schema": {
                   "$ref": "#/components/schemas/ResponseUserDto"
                 }
               }
             }
+          },
+          "409": {
+            "description": "Email already exists"
           }
         }
       },
@@ -65,9 +68,9 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Users found",
             "content": {
-              "application/json": {
+              "*/*": {
                 "schema": {
                   "$ref": "#/components/schemas/ResponsePageResponseUserDto"
                 }
@@ -96,14 +99,17 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "User found",
             "content": {
-              "application/json": {
+              "*/*": {
                 "schema": {
                   "$ref": "#/components/schemas/ResponseUserDto"
                 }
               }
             }
+          },
+          "404": {
+            "description": "User not found"
           }
         }
       },
@@ -135,14 +141,20 @@
         },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "User updated",
             "content": {
-              "application/json": {
+              "*/*": {
                 "schema": {
                   "$ref": "#/components/schemas/ResponseUserDto"
                 }
               }
             }
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "409": {
+            "description": "Email already exists"
           }
         }
       },
@@ -174,14 +186,20 @@
         },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "User updated",
             "content": {
-              "application/json": {
+              "*/*": {
                 "schema": {
                   "$ref": "#/components/schemas/ResponseUserDto"
                 }
               }
             }
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "409": {
+            "description": "Email already exists"
           }
         }
       },
@@ -202,8 +220,11 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
+          "204": {
+            "description": "User deleted"
+          },
+          "404": {
+            "description": "User not found"
           }
         }
       }
@@ -223,12 +244,12 @@
           "firstName": {
             "type": "string",
             "maxLength": 100,
-            "minLength": 3
+            "minLength": 2
           },
           "lastName": {
             "type": "string",
             "maxLength": 100,
-            "minLength": 3
+            "minLength": 2
           },
           "password": {
             "type": "string",
@@ -309,6 +330,15 @@
             "type": "string"
           },
           "lastName": {
+            "type": "string"
+          },
+          "notEmail": {
+            "type": "string"
+          },
+          "notFirstName": {
+            "type": "string"
+          },
+          "notLastName": {
             "type": "string"
           },
           "active": {
