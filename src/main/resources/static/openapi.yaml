@@ -2,44 +2,149 @@
   "openapi": "3.1.0",
   "info": {
     "title": "OpenAPI definition",
-    "version": "v0"
+    "version": "1.0.0"
+  },
+  "contact": {
+    "name": "Platform Team",
+    "email": "carles.saezmar@gmail.com"
   },
   "servers": [
     {
       "url": "http://localhost:8080",
-      "description": "Generated server url"
+      "description": "Local development server"
     }
   ],
+  "tags": {
+    "name": "User Service API",
+    "description": "Operations for creating, retrieving, updating and deleting user accounts."
+  },
   "paths": {
     "/api/users": {
       "post": {
         "tags": [
           "User Service API"
         ],
+        "summary": "Register a new user",
+        "description": "Creates a new user account with the supplied credentials and profile details. Emails must be unique across the platform and passwords must comply with the security policies described in the onboarding guidelines.",
         "operationId": "createUser",
         "requestBody": {
+          "required": true,
+          "description": "JSON representation of the user to create. The payload must include a unique email address and a password that meets minimum complexity requirements.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/RequestUserDto"
+                "$ref": "#/components/schemas/user_request_body"
+              },
+              "examples": {
+                "validRequest": {
+                  "summary": "Valid user creation payload",
+                  "value": {
+                    "email": "testemail@example.com",
+                    "firstName": "Test",
+                    "lastName": "User",
+                    "password": "password"
+                  }
+                }
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "201": {
-            "description": "User created",
-            "content": {
-              "*/*": {
+            "description": "User successfully created",
+            "headers": {
+              "Location": {
+                "description": "URI of the newly created user resource.",
                 "schema": {
-                  "$ref": "#/components/schemas/ResponseUserDto"
+                  "type": "string",
+                  "format": "uri"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/user_response_body"
+                },
+                "examples": {
+                  "createdUser": {
+                    "summary": "Representation of the persisted user",
+                    "value": {
+                      "id": 987,
+                      "email": "testemail@example.com",
+                      "firstName": "Test",
+                      "lastName": "User",
+                      "createdAt": "2025-01-12T12:34:56Z",
+                      "updatedAt": "2025-01-12T12:34:56Z",
+                      "active": true,
+                      "verified": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request payload is malformed or missing required attributes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "email": {
+                      "type": "string"
+                    },
+                    "password": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "missingEmail": {
+                    "summary": "Missing email error",
+                    "value": {
+                      "email": "must not be blank"
+                    }
+                  },
+                  "missingPassword": {
+                    "summary": "Missing password error",
+                    "value": {
+                      "password": "must not be blank"
+                    }
+                  },
+                  "missingEmailAndPassword": {
+                    "summary": "Missing email and password error",
+                    "value": {
+                      "password": "must not be blank",
+                      "email": "must not be blank"
+                    }
+                  }
                 }
               }
             }
           },
           "409": {
-            "description": "Email already exists"
+            "description": "A user with the supplied email already exists.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "duplicatedEmail": {
+                    "summary": "Duplicated email error",
+                    "value": {
+                      "error": "Email already in use: testemail@example.com"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -47,6 +152,8 @@
         "tags": [
           "User Service API"
         ],
+        "summary": "List users",
+        "description": "Retrieves a paginated collection of users that match the supplied filters. Use the `filter` parameter to narrow the results and `pageable` to control pagination and sorting.",
         "operationId": "getAllUsers",
         "parameters": [
           {
@@ -54,7 +161,7 @@
             "in": "query",
             "required": true,
             "schema": {
-              "$ref": "#/components/schemas/RequestUserFilterDto"
+              "$ref": "#/components/schemas/user_filter_request_parameters"
             }
           },
           {
@@ -62,7 +169,7 @@
             "in": "query",
             "required": true,
             "schema": {
-              "$ref": "#/components/schemas/Pageable"
+              "$ref": "#/components/schemas/pageable"
             }
           }
         ],
@@ -70,9 +177,43 @@
           "200": {
             "description": "Users found",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ResponsePageResponseUserDto"
+                  "$ref": "#/components/schemas/paged_users_response"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid filter or pagination parameters.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "invalidPage": {
+                    "summary": "Non numeric page parameter",
+                    "value": {
+                      "error": "Invalid parameter type",
+                      "message": "Parameter 'page' must be a valid Integer"
+                    }
+                  },
+                  "invalidSize": {
+                    "summary": "Non numeric size parameter",
+                    "value": {
+                      "error": "Invalid parameter type",
+                      "message": "Parameter 'size' must be a valid Integer"
+                    }
+                  }
                 }
               }
             }
@@ -85,10 +226,13 @@
         "tags": [
           "User Service API"
         ],
+        "summary": "Retrieve a user by identifier",
+        "description": "Returns the full representation of a user when the identifier exists.",
         "operationId": "getUserById",
         "parameters": [
           {
             "name": "userId",
+            "description": "Identifier of the user to retrieve.",
             "in": "path",
             "required": true,
             "schema": {
@@ -99,17 +243,79 @@
         ],
         "responses": {
           "200": {
-            "description": "User found",
+            "description": "The user was found.",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ResponseUserDto"
+                  "$ref": "#/components/schemas/user_response_body"
+                },
+                "examples": {
+                  "userFound": {
+                    "summary": "User found",
+                    "value": {
+                      "id": 1,
+                      "email": "testemail@example.com",
+                      "firstName": "Test",
+                      "lastName": "User",
+                      "createdAt": "2025-01-12T12:34:56Z",
+                      "updatedAt": "2025-01-12T12:34:56Z",
+                      "active": true,
+                      "verified": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The supplied identifier is not a valid number",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "invalidId": {
+                    "summary": "Invalid identifier error",
+                    "value": {
+                      "error": "Invalid parameter type",
+                      "message": "Parameter 'userId' must be a valid Long"
+                    }
+                  }
                 }
               }
             }
           },
           "404": {
-            "description": "User not found"
+            "description": "No user matches the supplied identifier.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "userNotFound": {
+                    "summary": "User not found error",
+                    "value": {
+                      "error": "User not found with id: 123"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -117,6 +323,8 @@
         "tags": [
           "User Service API"
         ],
+        "summary": "Replace a user",
+        "description": "Overwrites the full user record with the supplied payload. Use this operation when you want to update every mutable attribute of the user.",
         "operationId": "updateUser",
         "parameters": [
           {
@@ -130,31 +338,87 @@
           }
         ],
         "requestBody": {
+          "required": true,
+          "description": "Full user representation used to replace the current state.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/RequestUserDto"
+                "$ref": "#/components/schemas/user_request_body"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "200": {
-            "description": "User updated",
+            "description": "The user record was successfully replaced.",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ResponseUserDto"
+                  "$ref": "#/components/schemas/user_response_body"
+                },
+                "examples": {
+                  "userReplaced": {
+                    "summary": "Replaced user response",
+                    "value": {
+                      "id": 1,
+                      "email": "testemail@example.com",
+                      "firstName": "Test",
+                      "lastName": "User",
+                      "createdAt": "2025-01-12T12:34:56Z",
+                      "updatedAt": "2025-01-12T12:34:56Z",
+                      "active": true,
+                      "verified": false
+                    }
+                  }
                 }
               }
             }
           },
           "404": {
-            "description": "User not found"
+            "description": "No user matches the supplied identifier.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "userNotFound": {
+                    "summary": "User not found error",
+                    "value": {
+                      "error": "User not found with id: 123"
+                    }
+                  }
+                }
+              }
+            }
           },
           "409": {
-            "description": "Email already exists"
+            "description": "A user with the provided email already exists.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "emailAlreadyExists": {
+                    "summary": "Email already exists error",
+                    "value": {
+                      "error": "Email already in use: testemail@example.com"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -162,6 +426,8 @@
         "tags": [
           "User Service API"
         ],
+        "summary": "Partially update a user",
+        "description": "Applies a partial update to the user. Provide only the fields that must be modified. Fields omitted from the payload remain unchanged.",
         "operationId": "updateUserPartial",
         "parameters": [
           {
@@ -175,31 +441,129 @@
           }
         ],
         "requestBody": {
+          "required": true,
+          "description": "Subset of fields to update.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/RequestUserPatchDto"
+                "$ref": "#/components/schemas/patch_user_request_body"
+              },
+              "examples": {
+                "partialUpdateOnlyEmail": {
+                  "summary": "Update only email request",
+                  "value": {
+                    "email": "testemail@example.org"
+                  }
+                },
+                "partialUpdateOnlyFirstName": {
+                  "summary": "Update only first name request",
+                  "value": {
+                    "firstName": "Test"
+                  }
+                },
+                "partialUpdateOnlyLastName": {
+                  "summary": "Update only last name request",
+                  "value": {
+                    "lastName": "User"
+                  }
+                },
+                "partialUpdateOnlyPassword": {
+                  "summary": "Update only password request",
+                  "value": {
+                    "password": "UpdatedSecret#2025"
+                  }
+                },
+                "partialUpdateOnlyEmailAndFirstName": {
+                  "summary": "Update only email and first name request",
+                  "value": {
+                    "email": "testemail@example.org",
+                    "firstName": "Test"
+                  }
+                },
+                "partialUpdateAllFields": {
+                  "summary": "Update all fields request",
+                  "value": {
+                    "email": "testemail@example.org",
+                    "firstName": "Test",
+                    "lastName": "User",
+                    "password": "UpdatedSecret#2025"
+                  }
+                }
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "200": {
-            "description": "User updated",
+            "description": "The user record was successfully updated.",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ResponseUserDto"
+                  "$ref": "#/components/schemas/user_response_body"
+                },
+                "examples": {
+                  "userUpdated": {
+                    "summary": "User updated response",
+                    "value": {
+                      "id": 1,
+                      "email": "testemail@example.com",
+                      "firstName": "Test",
+                      "lastName": "User",
+                      "createdAt": "2025-01-12T12:34:56Z",
+                      "updatedAt": "2025-01-12T12:34:56Z",
+                      "active": true,
+                      "verified": false
+                    }
+                  }
                 }
               }
             }
           },
           "404": {
-            "description": "User not found"
+            "description": "No user matches the supplied identifier.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "userNotFound": {
+                    "summary": "User not found error",
+                    "value": {
+                      "error": "User not found with id: 123"
+                    }
+                  }
+                }
+              }
+            }
           },
           "409": {
-            "description": "Email already exists"
+            "description": "The update conflicts with an existing resource.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "emailAlreadyExists": {
+                    "summary": "Email already exists error",
+                    "value": {
+                      "error": "Email already in use: testemail@example.com"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -207,6 +571,8 @@
         "tags": [
           "User Service API"
         ],
+        "summary": "Delete a user",
+        "description": "Deletes the user and all related metadata.",
         "operationId": "deleteUser",
         "parameters": [
           {
@@ -221,10 +587,30 @@
         ],
         "responses": {
           "204": {
-            "description": "User deleted"
+            "description": "User successfully deleted. No content is returned."
           },
           "404": {
-            "description": "User not found"
+            "description": "No user matches the supplied identifier.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "userNotFound": {
+                    "summary": "User not found error",
+                    "value": {
+                      "error": "User not found with id: 123"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -232,7 +618,7 @@
   },
   "components": {
     "schemas": {
-      "RequestUserDto": {
+      "user_request_body": {
         "type": "object",
         "properties": {
           "email": {
@@ -262,7 +648,7 @@
           "password"
         ]
       },
-      "ResponseUserDto": {
+      "user_response_body": {
         "type": "object",
         "properties": {
           "id": {
@@ -294,7 +680,7 @@
           }
         }
       },
-      "RequestUserPatchDto": {
+      "patch_user_request_body": {
         "type": "object",
         "properties": {
           "email": {
@@ -320,7 +706,7 @@
           }
         }
       },
-      "RequestUserFilterDto": {
+      "user_filter_request_parameters": {
         "type": "object",
         "properties": {
           "email": {
@@ -349,7 +735,7 @@
           }
         }
       },
-      "Pageable": {
+      "pageable": {
         "type": "object",
         "properties": {
           "page": {
@@ -370,13 +756,13 @@
           }
         }
       },
-      "ResponsePageResponseUserDto": {
+      "paged_users_response": {
         "type": "object",
         "properties": {
           "content": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/ResponseUserDto"
+              "$ref": "#/components/schemas/user_response_body"
             }
           },
           "page": {
