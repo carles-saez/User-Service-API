@@ -2,6 +2,7 @@ package com.futurasmus.users_api.infrastructure.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,6 +23,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.Column;
 
+@Data
 @Getter
 @Setter
 @AllArgsConstructor

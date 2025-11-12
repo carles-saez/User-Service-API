@@ -3,9 +3,11 @@ package com.futurasmus.users_api.domain.model;
 import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+@Data
 @Getter
 @Setter
 @AllArgsConstructor
