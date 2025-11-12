@@ -32,7 +32,6 @@ public class UserService {
     // CREATE
     @Transactional
     public ResponseUserDto createUser(RequestUserDto userDto) {
-        // RequestUserDto normUserDto = userDto.withEmail(userDto.email().toLowerCase());
         RequestUserDto normUserDto = userDto.withEmailAndPassword(userDto.email().toLowerCase(), passwordEncoder.encode(userDto.password()));
         userRepository.findByEmail(normUserDto.email())
             .ifPresent(u -> { throw new EmailAlreadyExistsException(u.getEmail()); });
@@ -57,15 +56,12 @@ public class UserService {
     // UPDATE
     @Transactional
     public ResponseUserDto updateUser(Long userId, RequestUserDto userDto) {
-        // RequestUserDto normUserDto = userDto.withEmail(userDto.email().toLowerCase());
         RequestUserDto normUserDto = userDto.withEmailAndPassword(userDto.email().toLowerCase(), passwordEncoder.encode(userDto.password()));
-
         User existingUser = userRepository.findById(userId)
             .orElseThrow(() -> new UserNotFoundException(userId));
-                
         userRepository.findByEmail(normUserDto.email())
             .ifPresent(u -> { throw new EmailAlreadyExistsException(u.getEmail()); });
-
+        
         mapper.updateUserFromDto(normUserDto, existingUser);
         User saved = userRepository.save(existingUser);
         return mapper.toResponse(saved);
@@ -73,7 +69,6 @@ public class UserService {
 
     @Transactional
     public ResponseUserDto updateUserPartial(Long userId, RequestUserPatchDto userDto) {
-
         RequestUserPatchDto normUserDto = userDto;
         if (userDto.email() != null) {
             normUserDto = userDto.withEmail(userDto.email().toLowerCase());
@@ -84,7 +79,6 @@ public class UserService {
 
         User existingUser = userRepository.findById(userId)
             .orElseThrow(() -> new UserNotFoundException(userId));
-            
         if (normUserDto.email() != null) {
             userRepository.findByEmail(normUserDto.email())
                 .ifPresent(u -> { throw new EmailAlreadyExistsException(u.getEmail()); });
