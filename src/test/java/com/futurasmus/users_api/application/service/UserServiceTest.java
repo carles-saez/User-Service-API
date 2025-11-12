@@ -87,7 +87,10 @@ public class UserServiceTest {
         when(passwordEncoder.encode(userDto.password())).thenReturn(userDto.password());
 
         // Action & Assert
-        assertThrows(EmailAlreadyExistsException.class, () -> userService.createUser(userDto));
+        assertThrows(
+            EmailAlreadyExistsException.class,
+            () -> userService.createUser(userDto)
+        );
 
         verify(passwordEncoder).encode(userDto.password());
         verify(userRepository).findByEmail(userDto.email().toLowerCase());
@@ -156,7 +159,10 @@ public class UserServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
         
         // Action & Assert
-        assertThrows(UserNotFoundException.class, () -> userService.getUserById(userId));
+        assertThrows(
+            UserNotFoundException.class,
+            () -> userService.getUserById(userId)
+        );
         
         verify(userRepository).findById(userId);
         verify(mapper, times(0)).toResponse(any(User.class));
@@ -210,12 +216,16 @@ public class UserServiceTest {
         when(passwordEncoder.encode(userDto.password())).thenReturn(userDto.password());
         
         // Action & Assert
-        assertThrows(UserNotFoundException.class, () -> userService.updateUser(userId, userDto));
+        assertThrows(
+            UserNotFoundException.class,
+            () -> userService.updateUser(userId, userDto)
+        );
         
         verify(passwordEncoder).encode(userDto.password());
         verify(userRepository).findById(userId);
         verify(userRepository, times(0)).findByEmail(any(String.class));
-        verify(mapper, times(0)).updateUserFromDto(any(RequestUserDto.class), any(User.class));
+        verify(mapper, times(0))
+            .updateUserFromDto(any(RequestUserDto.class), any(User.class));
     }
     
     // --- UPDATE: email conflict ---
@@ -232,12 +242,16 @@ public class UserServiceTest {
         when(passwordEncoder.encode(userDto.password())).thenReturn(userDto.password());
         
         // Action & Assert
-        assertThrows(EmailAlreadyExistsException.class, () -> userService.updateUser(userId, userDto));
+        assertThrows(
+            EmailAlreadyExistsException.class,
+            () -> userService.updateUser(userId, userDto)
+        );
         
         verify(passwordEncoder).encode(userDto.password());
         verify(userRepository).findById(userId);
         verify(userRepository).findByEmail(userDto.email().toLowerCase());
-        verify(mapper, times(0)).updateUserFromDto(any(RequestUserDto.class), any(User.class));
+        verify(mapper, times(0))
+            .updateUserFromDto(any(RequestUserDto.class), any(User.class));
     }
 
     
@@ -292,12 +306,16 @@ public class UserServiceTest {
         when(passwordEncoder.encode(userDto.password())).thenReturn(userDto.password());
         
         // Action & Assert
-        assertThrows(UserNotFoundException.class, () -> userService.updateUserPartial(userId, userDto));
+        assertThrows(
+            UserNotFoundException.class,
+            () -> userService.updateUserPartial(userId, userDto)
+        );
         
         verify(passwordEncoder).encode(userDto.password());
         verify(userRepository).findById(userId);
         verify(userRepository, times(0)).findByEmail(any(String.class));
-        verify(mapper, times(0)).patchUserFromDto(any(RequestUserPatchDto.class), any(User.class));
+        verify(mapper, times(0))
+            .patchUserFromDto(any(RequestUserPatchDto.class), any(User.class));
     }
     
     // --- PARTIAL UPDATE: email conflict ---
@@ -314,12 +332,16 @@ public class UserServiceTest {
         when(passwordEncoder.encode(userDto.password())).thenReturn(userDto.password());
         
         // Action & Assert
-        assertThrows(EmailAlreadyExistsException.class, () -> userService.updateUserPartial(userId, userDto));
+        assertThrows(
+            EmailAlreadyExistsException.class,
+            () -> userService.updateUserPartial(userId, userDto)
+        );
         
         verify(passwordEncoder).encode(userDto.password());
         verify(userRepository).findById(userId);
         verify(userRepository).findByEmail(userDto.email().toLowerCase());
-        verify(mapper, times(0)).patchUserFromDto(any(RequestUserPatchDto.class), any(User.class));
+        verify(mapper, times(0))
+            .patchUserFromDto(any(RequestUserPatchDto.class), any(User.class));
     }
     
     // --- DELETE ---
@@ -348,7 +370,10 @@ public class UserServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
         
         // Action & Assert
-        assertThrows(UserNotFoundException.class, () -> userService.deleteUser(userId));
+        assertThrows(
+            UserNotFoundException.class,
+            () -> userService.deleteUser(userId)
+        );
         
         verify(userRepository).findById(userId);
         verify(userRepository, times(0)).deleteById(any(Long.class));

@@ -9,10 +9,10 @@ public class UserSpecification {
     public static Specification<UserEntity> withFilters(RequestUserFilterDto filters) {
         return Specification.allOf(
             emailContains(filters.email()),
-            firstNameContains(filters.firstName()),
-            lastNameContains(filters.lastName()),
             emailNotContains(filters.notEmail()),
+            firstNameContains(filters.firstName()),
             firstNameNotContains(filters.notFirstName()),
+            lastNameContains(filters.lastName()),
             lastNameNotContains(filters.notLastName()),
             isActive(filters.active()),
             isVerified(filters.verified())
