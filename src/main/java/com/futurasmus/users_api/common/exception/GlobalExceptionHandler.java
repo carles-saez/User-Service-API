@@ -9,8 +9,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -42,6 +45,14 @@ public class GlobalExceptionHandler {
         error.put("message", String.format("Parameter '%s' must be a valid %s", 
                 ex.getName(), ex.getRequiredType() != null ? ex.getRequiredType().getSimpleName() : "type"));
         return ResponseEntity.badRequest().body(error);
+    }
+    
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleNoResourceFound(NoResourceFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(Map.of(
+                "message", "La ruta solicitada no existe: " + ex.getResourcePath()
+            ));
     }
 
     @ExceptionHandler(Exception.class)
