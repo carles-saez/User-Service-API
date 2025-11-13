@@ -48,7 +48,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<Map<String, Object>> handleNoResourceFound(NoResourceFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-            .body(Map.of("message", "La ruta solicitada no existe: " + ex.getResourcePath()));
+            .body(Map.of("error", "La ruta solicitada no existe: " + ex.getResourcePath()));
     }
 
     @ExceptionHandler(Exception.class)
